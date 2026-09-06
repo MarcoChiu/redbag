@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="envelopeBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#cc2329"/>
+      <stop offset="100%" stop-color="#991418"/>
+    </linearGradient>
+    <linearGradient id="goldKnot" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fae092"/>
+      <stop offset="50%" stop-color="#c8a96e"/>
+      <stop offset="100%" stop-color="#a68442"/>
+    </linearGradient>
+  </defs>
+  <!-- Main Envelope Body -->
+  <rect x="10" y="6" width="44" height="52" rx="4" fill="url(#envelopeBg)" stroke="#e8b972" stroke-width="1.5"/>
+  <!-- Envelope Flap -->
+  <path d="M10 6 L32 26 L54 6 Z" fill="#b01b20" stroke="#e8b972" stroke-width="1"/>
+  <!-- Gold Center Emblem (Lucky Knot / Coin) -->
+  <circle cx="32" cy="27" r="6" fill="url(#goldKnot)"/>
+  <circle cx="32" cy="27" r="4.2" fill="none" stroke="#681014" stroke-width="0.8"/>
+  <rect x="29.8" y="24.8" width="4.4" height="4.4" fill="#681014"/>
+  <!-- Gold Border Accent -->
+  <rect x="14" y="38" width="36" height="1" fill="#e8b972" opacity="0.6"/>
+</svg>
