@@ -1,8 +1,13 @@
 {
-  "name": "redbag-print-tool",
+  "name": "redbag",
   "private": true,
   "version": "1.0.0",
   "description": "紅包袋列印工具 - 支援進紙對齊校正 ‧ 毫米級精確定位 ‧ 防卡紙翻轉",
+  "homepage": "https://MarcoChiu.github.io/redbag",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarcoChiu/redbag.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
