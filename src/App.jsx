@@ -3,6 +3,9 @@ import Header from './components/Header';
 import ControlPanel from './components/ControlPanel';
 import EnvelopePreview from './components/EnvelopePreview';
 import PrintCanvas from './components/PrintCanvas';
+import MobileSegmentedTabs from './components/MobileSegmentedTabs';
+import MobileBottomBar from './components/MobileBottomBar';
+import MobilePreviewDrawer from './components/MobilePreviewDrawer';
 import {
   DEFAULT_SETTINGS,
   FEED_CONFIGS,
@@ -27,6 +30,11 @@ export default function App() {
     }
     return DEFAULT_SETTINGS;
   });
+
+  // 手機版切換分頁 ('settings' | 'preview')
+  const [mobileTab, setMobileTab] = useState('settings');
+  // 手機版彈出式預覽抽屜
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const printCanvasRef = useRef(null);
 
@@ -93,21 +101,31 @@ export default function App() {
     <>
       <Header />
 
-      <main className="workspace">
-        {/* 左側可滾動的控制設定面板 */}
-        <ControlPanel
-          state={settings}
-          onChange={updateSettings}
-          onFeedModeSelect={handleFeedModeSelect}
-          onDirectionSelect={handleDirectionSelect}
-        />
+      {/* 手機版頂部切換分頁 (桌面版自動隱藏) */}
+      <MobileSegmentedTabs
+        activeTab={mobileTab}
+        onChange={setMobileTab}
+      />
 
-        {/* 右側 Sticky 釘選預覽區 (不會隨左側滾動而消失) */}
-        <EnvelopePreview
-          state={settings}
-          onToggleViewMode={handleToggleViewMode}
-          onPrint={handlePrint}
-        />
+      <main className="workspace">
+        {/* 控制設定面板 (手機版在 settings tab 時顯示，桌面版永遠顯示) */}
+        <div className={`workspace-pane pane-settings ${mobileTab === 'settings' ? 'active-mobile' : ''}`}>
+          <ControlPanel
+            state={settings}
+            onChange={updateSettings}
+            onFeedModeSelect={handleFeedModeSelect}
+            onDirectionSelect={handleDirectionSelect}
+          />
+        </div>
+
+        {/* 右側 Sticky 釘選預覽區 (手機版在 preview tab 時顯示，桌面版永遠顯示) */}
+        <div className={`workspace-pane pane-preview ${mobileTab === 'preview' ? 'active-mobile' : ''}`}>
+          <EnvelopePreview
+            state={settings}
+            onToggleViewMode={handleToggleViewMode}
+            onPrint={handlePrint}
+          />
+        </div>
       </main>
 
       <footer className="app-footer">
@@ -120,6 +138,22 @@ export default function App() {
           <span>300 DPI Ultra HD</span>
         </div>
       </footer>
+
+      {/* 手機版專屬底部懸浮快捷列 (桌面版自動隱藏) */}
+      <MobileBottomBar
+        state={settings}
+        onOpenPreview={() => setIsDrawerOpen(true)}
+        onPrint={handlePrint}
+      />
+
+      {/* 手機版彈出式即時預覽抽屜 (隨調隨看) */}
+      <MobilePreviewDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        state={settings}
+        onToggleViewMode={handleToggleViewMode}
+        onPrint={handlePrint}
+      />
 
       {/* 列印專用高解析度畫布 */}
       <PrintCanvas ref={printCanvasRef} />

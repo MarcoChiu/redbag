@@ -5,7 +5,8 @@ import { drawToCanvas } from '../utils/canvasDrawer';
 export default function EnvelopePreview({
   state,
   onToggleViewMode,
-  onPrint
+  onPrint,
+  isDrawer = false
 }) {
   const canvasRef = useRef(null);
   const cfg = FEED_CONFIGS[state.feedMode] || FEED_CONFIGS.center;
@@ -33,7 +34,7 @@ export default function EnvelopePreview({
   }
 
   return (
-    <div className="preview-column">
+    <div className={`preview-column ${isDrawer ? 'in-drawer' : ''}`}>
       <div className="preview-header">
         <span className="preview-label">A5 托盤與紅包袋模擬</span>
         <div className="preview-tools">
