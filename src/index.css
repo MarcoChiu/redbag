@@ -986,10 +986,16 @@ footer.app-footer {
     overflow: hidden !important;
   }
 
+  /* 隱藏 React SPA 樹與其他介面元素 */
+  #root {
+    display: none !important;
+  }
+
   body > *:not(#printPage) {
     display: none !important;
   }
 
+  /* 顯示高解析度列印專用畫布 (透過 Portal 掛載於 body) */
   #printPage {
     display: block !important;
     position: absolute !important;
@@ -999,11 +1005,15 @@ footer.app-footer {
     height: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
+    background: transparent !important;
+    z-index: 999999 !important;
   }
 
   #printPage canvas {
     display: block !important;
     width: 148mm !important;
     height: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }

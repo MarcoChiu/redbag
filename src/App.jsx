@@ -83,8 +83,8 @@ export default function App() {
     }));
   }, []);
 
-  // 觸發高解析度 300 DPI 列印
-  const handlePrint = useCallback(() => {
+  // 確保列印畫布隨時繪製完畢 (支援按鈕點擊、Ctrl+P 或瀏覽器列印選單)
+  const syncPrintCanvas = useCallback(() => {
     if (printCanvasRef.current) {
       drawToCanvas(
         printCanvasRef.current,
@@ -94,8 +94,32 @@ export default function App() {
         settings
       );
     }
-    window.print();
   }, [settings]);
+
+  // 設定或字型變更時即時預先繪製高解析度列印畫布
+  useEffect(() => {
+    syncPrintCanvas();
+  }, [syncPrintCanvas]);
+
+  // 監聽瀏覽器 beforeprint 事件 (無論按按鈕、Ctrl+P 或瀏覽器選單列印都確保畫布是最新的)
+  useEffect(() => {
+    const onBeforePrint = () => {
+      syncPrintCanvas();
+    };
+    window.addEventListener('beforeprint', onBeforePrint);
+    return () => {
+      window.removeEventListener('beforeprint', onBeforePrint);
+    };
+  }, [syncPrintCanvas]);
+
+  // 觸發高解析度 300 DPI 列印
+  const handlePrint = useCallback(() => {
+    syncPrintCanvas();
+    // 延遲 50ms 確保瀏覽器完成 Canvas 重繪緩衝
+    setTimeout(() => {
+      window.print();
+    }, 50);
+  }, [syncPrintCanvas]);
 
   return (
     <>
