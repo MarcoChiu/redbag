@@ -1,13 +1,12 @@
 import React from 'react';
-import { FEED_CONFIGS, FONT_OPTIONS, QUICK_PHRASES } from '../constants/envelope';
+import { FEED_CONFIGS, FONT_OPTIONS } from '../constants/envelope';
 import HintCard from './HintCard';
 
 export default function ControlPanel({
   state,
   onChange,
   onFeedModeSelect,
-  onDirectionSelect,
-  onQuickPhraseApply
+  onDirectionSelect
 }) {
   const handleInputChange = (field, value) => {
     onChange({ [field]: value });
@@ -99,10 +98,10 @@ export default function ControlPanel({
         )}
       </div>
 
-      {/* 3. 字體與常用祝賀詞 */}
+      {/* 3. 字體風格 */}
       <div className="control-card">
         <div className="section-title">
-          <span>3. 字體風格與常用範本</span>
+          <span>3. 字體風格</span>
         </div>
 
         <div className="field">
@@ -120,22 +119,6 @@ export default function ControlPanel({
               </option>
             ))}
           </select>
-        </div>
-
-        <div className="field">
-          <label>常用祝賀詞快速填入</label>
-          <div className="quick-phrases">
-            {QUICK_PHRASES.map((phrase, idx) => (
-              <button
-                key={idx}
-                type="button"
-                className="phrase-chip"
-                onClick={() => onQuickPhraseApply(phrase)}
-              >
-                {phrase.label}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
 

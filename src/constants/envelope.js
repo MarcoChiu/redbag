@@ -63,15 +63,6 @@ export const FONT_OPTIONS = [
   }
 ];
 
-export const QUICK_PHRASES = [
-  { label: '端午感謝教練', topOrRight: '感謝教練', botOrLeft: '端午安康', isDouble: false },
-  { label: '新春感謝教練', topOrRight: '感謝教練', botOrLeft: '新春大吉', isDouble: false },
-  { label: '敬謝恩師', topOrRight: '敬謝恩師', botOrLeft: '教誨如春風', isDouble: false },
-  { label: '雙欄：教練團獎金', topOrRight: '教練團獎金', botOrLeft: '一一五年桌球錦標賽', isDouble: true },
-  { label: '雙欄：比賽獎勵', topOrRight: '優秀選手獎勵金', botOrLeft: '全國桌球公開賽', isDouble: true },
-  { label: '雙欄：福壽安康', topOrRight: '福壽雙全安康富貴', botOrLeft: '歲歲平安年年順遂', isDouble: true }
-];
-
 export const DEFAULT_SETTINGS = {
   mode: 'single',          // 'single' | 'double'
   feedMode: 'center',      // 'left' | 'center' | 'right'

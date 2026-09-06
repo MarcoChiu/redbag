@@ -75,25 +75,6 @@ export default function App() {
     }));
   }, []);
 
-  // 快速套用祝賀語範本
-  const handleQuickPhraseApply = useCallback((phrase) => {
-    if (phrase.isDouble) {
-      setSettings((prev) => ({
-        ...prev,
-        mode: 'double',
-        d_right: phrase.topOrRight,
-        d_left: phrase.botOrLeft
-      }));
-    } else {
-      setSettings((prev) => ({
-        ...prev,
-        mode: 'single',
-        s_top: phrase.topOrRight,
-        s_bot: phrase.botOrLeft
-      }));
-    }
-  }, []);
-
   // 觸發高解析度 300 DPI 列印
   const handlePrint = useCallback(() => {
     if (printCanvasRef.current) {
@@ -119,7 +100,6 @@ export default function App() {
           onChange={updateSettings}
           onFeedModeSelect={handleFeedModeSelect}
           onDirectionSelect={handleDirectionSelect}
-          onQuickPhraseApply={handleQuickPhraseApply}
         />
 
         {/* 右側 Sticky 釘選預覽區 (不會隨左側滾動而消失) */}
