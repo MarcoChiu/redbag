@@ -27,32 +27,39 @@ export default function EnvelopePreview({
   const isBottom = state.direction === 'bottom';
   const isTrayView = state.previewMode === 'tray';
 
-  // 狀態徽章文字
-  let dirBadgeText = ' ‧ 封口朝下';
-  if (isBottom) {
-    dirBadgeText = isTrayView ? ' ‧ 封底朝下(托盤視角)' : ' ‧ 封底朝下(正面檢視)';
-  }
-
   return (
     <div className={`preview-column ${isDrawer ? 'in-drawer' : ''}`}>
+      {/* 頂部標題與狀態 */}
       <div className="preview-header">
         <span className="preview-label">A5 托盤與紅包袋模擬</span>
-        <div className="preview-tools">
-          {isBottom && (
+        <span className="feed-status-badge">
+          {cfg.shortName} · {isBottom ? '封底先入' : '封口先入'}
+        </span>
+      </div>
+
+      {/* 封底模式專屬：預覽視角切換器 (正面檢視 vs 托盤視角) */}
+      {isBottom && (
+        <div className="view-mode-bar">
+          <div className="view-mode-tabs">
             <button
               type="button"
-              className={`view-flip-btn ${isTrayView ? 'active' : ''}`}
-              onClick={onToggleViewMode}
-              title={isTrayView ? '點擊切換為正面檢視' : '點擊切換為托盤進紙視角'}
+              className={`view-tab-pill ${!isTrayView ? 'active' : ''}`}
+              onClick={() => isTrayView && onToggleViewMode()}
+              title="字體正向顯示，最直覺方便調整字級與邊距"
             >
-              {isTrayView ? '🖨️ 托盤視角' : '👁️ 正面檢視'}
+              👁️ 正面檢視 (正向排版)
             </button>
-          )}
-          <span className="feed-status-badge">
-            {cfg.shortName}{dirBadgeText}
-          </span>
+            <button
+              type="button"
+              className={`view-tab-pill ${isTrayView ? 'active' : ''}`}
+              onClick={() => !isTrayView && onToggleViewMode()}
+              title="模擬實體進紙托盤中倒立擺放的狀態"
+            >
+              🖨️ 托盤視角 (進紙模擬)
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* A5 紙張模擬框 (250px × 354.7px) */}
       <div className="a5-container">
