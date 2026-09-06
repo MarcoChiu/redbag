@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紅包袋列印工具 - 桌球隊/個人專用</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c8a96e;
+    --gold-hover: #dbb97e;
+    --gold-active: #e6c587;
+    --dark-bg: #181818;
+    --panel-bg: #242424;
+    --input-bg: #121212;
+    --border-color: #383838;
+    --envelope-red: #c22026;
+    --envelope-shadow: rgba(0, 0, 0, 0.45);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+    background: var(--dark-bg);
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+    gap: 24px;
+  }
+
+  header {
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #888;
+    letter-spacing: 1px;
+  }
+
+  .workspace {
+    display: flex;
+    gap: 36px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  /* ── 控制面板 ── */
+  .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 22px 24px;
+    width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  /* 模式切換 Tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    background: var(--input-bg);
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: #aaa;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all .2s;
+  }
+  .tab.active {
+    background: var(--gold);
+    color: #1a1a1a;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(200, 169, 110, 0.3);
+  }
+
+  .section-divider {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+  }
+
+  /* 進紙方式選擇按鈕群 */
+  .feed-modes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .feed-btn {
+    padding: 7px 4px;
+    font-size: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: #bbb;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all .15s;
+    line-height: 1.3;
+  }
+  .feed-btn:hover {
+    border-color: #666;
+    color: #fff;
+  }
+  .feed-btn.active {
+    border-color: var(--gold);
+    background: rgba(200, 169, 110, 0.15);
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .feed-btn small {
+    display: block;
+    font-size: 10px;
+    opacity: 0.75;
+  }
+
+  /* 進紙方向 (封口朝下 vs 封底朝下) 按鈕群 */
+  .feed-directions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .dir-btn {
+    padding: 8px 6px;
+    font-size: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: #bbb;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all .15s;
+    line-height: 1.3;
+  }
+  .dir-btn:hover {
+    border-color: #666;
+    color: #fff;
+  }
+  .dir-btn.active {
+    border-color: var(--gold);
+    background: rgba(200, 169, 110, 0.15);
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .dir-btn small {
+    display: block;
+    font-size: 10px;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+
+  .bottom-feed-options {
+    margin-top: 8px;
+    background: rgba(200, 169, 110, 0.08);
+    border: 1px solid rgba(200, 169, 110, 0.25);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .rotate-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #eee;
+    margin: 0;
+  }
+  .rotate-toggle-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .bottom-feed-tip {
+    font-size: 11px;
+    color: #999;
+    line-height: 1.5;
+    margin-top: 6px;
+    border-top: 1px dashed rgba(200, 169, 110, 0.2);
+    padding-top: 6px;
+  }
+  .bottom-feed-tip strong {
+    color: var(--gold);
+  }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+
+  label {
+    font-size: 12px;
+    color: #bbb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .label-hint {
+    font-size: 11px;
+    color: #777;
+  }
+
+  input[type="text"], select {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: #eee;
+    padding: 7px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    width: 100%;
+    outline: none;
+    transition: border-color .2s;
+  }
+  input[type="text"]:focus, select:focus {
+    border-color: var(--gold);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+
+  .range-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .range-val {
+    font-size: 12px;
+    color: var(--gold);
+    width: 42px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  /* 快速短語按鈕 */
+  .quick-phrases {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .phrase-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: #303030;
+    color: #ccc;
+    border: 1px solid #444;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .phrase-chip:hover {
+    background: #404040;
+    color: #fff;
+    border-color: var(--gold);
+  }
+
+  /* 列印提示卡片 */
+  .hint-card {
+    background: rgba(200, 169, 110, 0.08);
+    border: 1px solid rgba(200, 169, 110, 0.25);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #ccc;
+    line-height: 1.6;
+  }
+  .hint-card strong {
+    color: var(--gold);
+  }
+  .hint-card ol {
+    margin-left: 18px;
+    margin-top: 4px;
+    color: #aaa;
+  }
+
+  .btn-print {
+    width: 100%;
+    padding: 12px;
+    background: var(--gold);
+    color: #1a1a1a;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all .2s;
+    box-shadow: 0 4px 14px rgba(200, 169, 110, 0.35);
+  }
+  .btn-print:hover {
+    background: var(--gold-hover);
+    transform: translateY(-1px);
+  }
+  .btn-print:active {
+    background: var(--gold-active);
+    transform: translateY(0);
+  }
+
+  /* ── 預覽區 ── */
+  .preview-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+  }
+
+  .preview-label {
+    font-size: 13px;
+    color: #aaa;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  .feed-status-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #333;
+    color: var(--gold);
+    border: 1px solid rgba(200, 169, 110, 0.4);
+  }
+
+  /* A5 紙張模擬器：148×210mm，按比例放大顯示 (寬 250px × 高 354.7px) */
+  .a5-container {
+    width: 250px;
+    height: 354.7px;
+    background: #fdfdfd;
+    position: relative;
+    border: 1px solid #444;
+    border-radius: 3px;
+    box-shadow: 0 10px 35px rgba(0,0,0,.6);
+    overflow: hidden;
+  }
+
+  /* A5 紙張中央與參考標示線 */
+  .a5-center-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    border-left: 1px dashed rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* 擬真紅包袋元件 (寬 90mm × 高 180mm) */
+  .envelope-mockup {
+    position: absolute;
+    top: 0;
+    width: 152px;  /* 90 / 148 * 250 ≈ 152px */
+    height: 304px; /* 180 / 210 * 354.7 ≈ 304px */
+    background: linear-gradient(135deg, #cc2329 0%, #b31a1f 100%);
+    box-shadow: 0 4px 16px var(--envelope-shadow);
+    border-radius: 0 0 8px 8px;
+    transition: left .25s ease-out;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* 紅包袋頂部封口折線示意 */
+  .envelope-mockup::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 28px;
+    border-bottom: 1px dashed rgba(255, 215, 0, 0.35);
+    background: rgba(0, 0, 0, 0.08);
+    transition: all .2s;
+  }
+
+  /* 封底先進紙模式：封口折線移至底部，頂部為平整封閉端 */
+  .envelope-mockup.is-bottom-feed {
+    border-radius: 8px 8px 0 0;
+  }
+  .envelope-mockup.is-bottom-feed::before {
+    top: auto;
+    bottom: 0;
+    border-bottom: none;
+    border-top: 1px dashed rgba(255, 215, 0, 0.35);
+  }
+
+  .envelope-flap-label {
+    position: absolute;
+    top: 7px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10px;
+    color: rgba(255, 215, 0, 0.7);
+    letter-spacing: 1px;
+    pointer-events: none;
+    transition: all .2s;
+  }
+  .envelope-mockup.is-bottom-feed .envelope-flap-label {
+    top: auto;
+    bottom: 7px;
+  }
+
+  .a5-feed-arrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    font-size: 10px;
+    color: #666;
+    background: rgba(0, 0, 0, 0.04);
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
+    z-index: 5;
+    letter-spacing: 1px;
+    pointer-events: none;
+  }
+
+  .view-flip-btn {
+    padding: 3px 10px;
+    font-size: 11px;
+    border: 1px solid rgba(200, 169, 110, 0.4);
+    background: var(--input-bg);
+    color: var(--gold);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .view-flip-btn:hover {
+    background: rgba(200, 169, 110, 0.2);
+    border-color: var(--gold);
+  }
+  .view-flip-btn.active {
+    background: rgba(200, 169, 110, 0.25);
+    border-color: var(--gold);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  /* 紅包袋中央對齊輔助線 */
+  .envelope-center-guide {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    border-left: 1px dashed rgba(255, 255, 255, 0.25);
+  }
+
+  /* Canvas 繪製層（透明背景，文字直接映在紅包袋上） */
+  canvas#preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  .preview-footer-note {
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+    max-width: 250px;
+    line-height: 1.4;
+  }
+
+  /* ── 列印輸出專區 ── */
+  #printPage {
+    display: none;
+  }
+
+  @media print {
+    @page {
+      size: A5 portrait;
+      margin: 0;
+    }
+
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      width: 148mm !important;
+      height: 210mm !important;
+      overflow: hidden !important;
+    }
+
+    body > *:not(#printPage) {
+      display: none !important;
+    }
+
+    #printPage {
+      display: block !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 148mm !important;
+      height: 210mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    #printPage canvas {
+      display: block !important;
+      width: 148mm !important;
+      height: 210mm !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>紅包袋列印工具</h1>
+  <p class="subtitle">支援進紙對齊校正 ‧ 毫米級精確定位 ‧ 所見即所得</p>
+</header>
+
+<div class="workspace">
+
+  <!-- 控制面板 -->
+  <div class="panel">
+
+    <!-- 模式切換 -->
+    <div class="tabs">
+      <button class="tab active" id="tab_single" onclick="switchMode('single')">單欄居中</button>
+      <button class="tab" id="tab_double" onclick="switchMode('double')">雙欄並排</button>
+    </div>
+
+    <!-- 1. 印表機進紙方式校正 (解決偏心問題關鍵) -->
+    <div class="section-divider">印表機進紙方式校正</div>
+    <div class="feed-modes">
+      <button class="feed-btn" id="feed_left" onclick="setFeedMode('left')">
+        靠左進紙
+        <small>中心 45mm</small>
+      </button>
+      <button class="feed-btn active" id="feed_center" onclick="setFeedMode('center')">
+        居中進紙
+        <small>中心 74mm</small>
+      </button>
+      <button class="feed-btn" id="feed_right" onclick="setFeedMode('right')">
+        靠右進紙
+        <small>中心 103mm</small>
+      </button>
+    </div>
+
+    <!-- 2. 紅包袋放紙方向 (防封口卡紙/壓爛) -->
+    <div class="section-divider">紅包袋放紙方向（防爛防卡紙）</div>
+    <div class="feed-directions">
+      <button class="dir-btn active" id="dir_top" onclick="setDirection('top')">
+        封口朝下 (開口先入)
+        <small>傳統模式 ‧ 開口端先進紙</small>
+      </button>
+      <button class="dir-btn" id="dir_bottom" onclick="setDirection('bottom')">
+        封底朝下 (封閉端先入) ★
+        <small>防止封口壓爛 ‧ 順暢進紙</small>
+      </button>
+    </div>
+
+    <!-- 封底朝下專屬設定與解說 -->
+    <div class="bottom-feed-options" id="bottomFeedOptions" style="display:none;">
+      <label class="rotate-toggle-row">
+        <input type="checkbox" id="chk_rotate" checked onchange="onRotateChange()">
+        <span><strong>列印自動旋轉 180°</strong>（確保印出拿在手上為正向）</span>
+      </label>
+      <div class="bottom-feed-tip">
+        💡 <strong>說明：</strong>封底先放入印表機時，印表機是自紙張底部打印。系統列印時會<strong>自動倒轉 180°</strong> 輸出，印出後拿起紅包袋（封口在上方）時，<strong>文字完全正向、不顛倒</strong>！<br>
+        （預覽畫面預設已為您轉正檢視；若特定印表機驅動本身自帶翻轉導致相反，取消勾選即可）
+      </div>
+    </div>
+
+    <!-- 3. 字體選擇與快速常用範本 -->
+    <div class="field">
+      <label>
+        <span>字體風格</span>
+        <span class="label-hint">楷體更具喜慶典雅氣息</span>
+      </label>
+      <select id="font_family" onchange="onFontChange()">
+        <option value="DFKai-SB" selected>標楷體 (經典書法氣息)</option>
+        <option value="Microsoft JhengHei">微軟正黑體 (Bold 現代風格)</option>
+        <option value="Noto Sans TC">思源黑體 (精緻黑體)</option>
+      </select>
+    </div>
+
+    <!-- 快速範本 -->
+    <div class="field">
+      <label>常用祝賀詞快速填入</label>
+      <div class="quick-phrases">
+        <span class="phrase-chip" onclick="applyPhrase('感謝教練', '端午安康')">端午感謝教練</span>
+        <span class="phrase-chip" onclick="applyPhrase('感謝教練', '新春大吉')">新春感謝教練</span>
+        <span class="phrase-chip" onclick="applyPhrase('教練團獎金', '一一五年桌球錦標賽', true)">雙欄：教練團獎金</span>
+        <span class="phrase-chip" onclick="applyPhrase('優秀選手獎勵金', '全國桌球公開賽', true)">雙欄：比賽獎勵</span>
+      </div>
+    </div>
+
+    <!-- 單欄設定 -->
+    <div id="singlePanel">
+      <div class="section-divider">單欄文字內容與排版</div>
+
+      <div class="field">
+        <label>上半段文字（直排）</label>
+        <input type="text" id="s_top" value="感謝教練" oninput="render()">
+      </div>
+
+      <div class="field">
+        <label>下半段文字（直排）</label>
+        <input type="text" id="s_bot" value="端午安康" oninput="render()">
+      </div>
+
+      <div class="field">
+        <label>字級大小</label>
+        <div class="range-row">
+          <input type="range" id="s_size" min="60" max="180" value="144" oninput="render()">
+          <span class="range-val" id="s_size_val">144</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>
+          <span>水平位置（mm）</span>
+          <span class="label-hint">依進紙模式自動計算</span>
+        </label>
+        <div class="range-row">
+          <input type="range" id="s_x" min="15" max="135" value="74" oninput="onCustomXChange()">
+          <span class="range-val" id="s_x_val">74</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>
+          <span>垂直起始位置（mm）</span>
+          <span class="label-hint">可避開頂部圖樣</span>
+        </label>
+        <div class="range-row">
+          <input type="range" id="s_y" min="15" max="90" value="37" oninput="render()">
+          <span class="range-val" id="s_y_val">37</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>
+          <span>上下段文字間距（mm）</span>
+          <span class="label-hint">調整兩段距離</span>
+        </label>
+        <div class="range-row">
+          <input type="range" id="s_gap" min="0" max="40" value="10" oninput="render()">
+          <span class="range-val" id="s_gap_val">10</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 雙欄設定 -->
+    <div id="doublePanel" style="display:none">
+      <div class="section-divider">雙欄文字內容與排版</div>
+
+      <div class="field">
+        <label>右欄主文（直排）</label>
+        <input type="text" id="d_right" value="教練團獎金" oninput="render()">
+      </div>
+      <div class="field">
+        <label>右欄字級大小</label>
+        <div class="range-row">
+          <input type="range" id="d_rsize" min="60" max="180" value="155" oninput="render()">
+          <span class="range-val" id="d_rsize_val">155</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>右欄水平位置（mm）</label>
+        <div class="range-row">
+          <input type="range" id="d_rx" min="20" max="130" value="74" oninput="render()">
+          <span class="range-val" id="d_rx_val">74</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>右欄上方邊距（mm）</label>
+        <div class="range-row">
+          <input type="range" id="d_rtop" min="10" max="90" value="53" oninput="render()">
+          <span class="range-val" id="d_rtop_val">53</span>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:4px">
+        <label>左欄副文（直排）</label>
+        <input type="text" id="d_left" value="一一五年桌球錦標賽" oninput="render()">
+      </div>
+      <div class="field">
+        <label>左欄字級大小</label>
+        <div class="range-row">
+          <input type="range" id="d_lsize" min="40" max="140" value="117" oninput="render()">
+          <span class="range-val" id="d_lsize_val">117</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>左欄水平位置（mm）</label>
+        <div class="range-row">
+          <input type="range" id="d_lx" min="10" max="120" value="51" oninput="render()">
+          <span class="range-val" id="d_lx_val">51</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>左欄上方邊距（mm）</label>
+        <div class="range-row">
+          <input type="range" id="d_ltop" min="10" max="90" value="42" oninput="render()">
+          <span class="range-val" id="d_ltop_val">42</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 列印提醒指引 -->
+    <div class="hint-card">
+      <strong>🖨️ 列印重要設定：</strong>
+      <ol>
+        <li>印表機紙張尺寸請選擇 <strong>A5</strong>。</li>
+        <li>邊界務必設為 <strong>「無」或「0」</strong>。</li>
+        <li>縮放/比例請選 <strong>「實際大小 (100%)」</strong>。</li>
+        <li id="hint_feed_rule">放紙方向：<strong>紅包袋封口（開口端）朝下放入</strong>進紙托盤。</li>
+      </ol>
+    </div>
+
+    <button class="btn-print" onclick="doPrint()">立即列印紅包袋</button>
+  </div>
+
+  <!-- 預覽區 -->
+  <div class="preview-wrap">
+    <div class="preview-header">
+      <span class="preview-label">A5 托盤與紅包袋模擬</span>
+      <div style="display: flex; gap: 6px; align-items: center;">
+        <button class="view-flip-btn" id="viewFlipBtn" onclick="toggleViewMode()" title="切換檢視視角" style="display:none;">
+          👁️ 正面檢視 (預設)
+        </button>
+        <span class="feed-status-badge" id="feed_badge">居中進紙 ‧ 封口朝下</span>
+      </div>
+    </div>
+
+    <!-- A5 紙張模擬框 -->
+    <div class="a5-container" id="a5Container">
+      <div class="a5-feed-arrow" id="feedArrow">▼ 印表機進紙入口（此端先進入）</div>
+      <div class="a5-center-line" title="A5 紙張正中央"></div>
+
+      <!-- 擬真紅包袋：寬 90mm × 高 180mm，依進紙模式定位 -->
+      <div class="envelope-mockup" id="envelopeMockup" style="left: 49px;">
+        <div class="envelope-center-guide" title="紅包袋正中央"></div>
+        <div class="envelope-flap-label" id="flapLabel">── 封口折線端 ──</div>
+      </div>
+
+      <!-- 繪製文字的 Canvas -->
+      <canvas id="preview" width="1480" height="2100"></canvas>
+    </div>
+
+    <p class="preview-footer-note" id="previewFooterNote">
+      白色區域代表印表機 A5 進紙托盤，紅色方塊代表您的實體紅包袋。文字將精準印在紅包袋中央。
+    </p>
+  </div>
+
+</div>
+
+<!-- 高解析度列印專用頁面 (僅在列印時生效) -->
+<div id="printPage">
+  <canvas id="printCanvas" width="1748" height="2480"></canvas>
+</div>
+
+<script>
+// ── 狀態管理 ──
+let currentMode = 'single';
+let currentFeedMode = 'center'; // 預設居中進紙（使用者校準最佳模式）
+let currentDirection = 'top';   // 'top': 封口朝下(開口先入)；'bottom': 封底朝下(封閉端先入)
+let previewMode = 'front';      // 'front': 正面完成效果(預設，字體永遠正向); 'tray': 托盤進紙視角
+let rotateOnPrint = true;       // 封底朝下時是否旋轉 180° 列印 (預設 true)
+
+// 進紙模式對應的基準 X 座標 (以 A5 寬 148mm 為基準)
+// 靠左：紅包袋 0~90mm，中心 45mm
+// 居中：紅包袋 29~119mm，中心 74mm
+// 靠右：紅包袋 58~148mm，中心 103mm
+const FEED_CONFIGS = {
+  left: {
+    name: '靠左進紙模式',
+    envelopeLeftPx: 0,        // (0 / 148) * 250 = 0
+    centerX: 45,
+    doubleRightX: 45,
+    doubleLeftX: 22
+  },
+  center: {
+    name: '居中進紙模式',
+    envelopeLeftPx: 49,       // ((148 - 90) / 2 / 148) * 250 ≈ 49px
+    centerX: 74,
+    doubleRightX: 74,
+    doubleLeftX: 51
+  },
+  right: {
+    name: '靠右進紙模式',
+    envelopeLeftPx: 98,       // ((148 - 90) / 148) * 250 ≈ 98px
+    centerX: 103,
+    doubleRightX: 103,
+    doubleLeftX: 80
+  }
+};
+
+function v(id) { return document.getElementById(id); }
+function num(id) { return parseFloat(v(id).value) || 0; }
+
+// 切換單欄 / 雙欄
+function switchMode(m) {
+  currentMode = m;
+  v('singlePanel').style.display = m === 'single' ? '' : 'none';
+  v('doublePanel').style.display = m === 'double' ? '' : 'none';
+  v('tab_single').classList.toggle('active', m === 'single');
+  v('tab_double').classList.toggle('active', m === 'double');
+  saveSettings();
+  render();
+}
+
+// 切換進紙模式 (靠左 / 居中 / 靠右)
+function setFeedMode(mode) {
+  currentFeedMode = mode;
+  ['left', 'center', 'right'].forEach(m => {
+    v('feed_' + m).classList.toggle('active', m === mode);
+  });
+
+  const cfg = FEED_CONFIGS[mode];
+  updateBadge();
+
+  // 移動模擬紅包袋位置
+  v('envelopeMockup').style.left = cfg.envelopeLeftPx + 'px';
+
+  // 自動同步更新 X 滑桿為該進紙模式的推薦中心座標
+  v('s_x').value = cfg.centerX;
+  v('s_x_val').textContent = cfg.centerX;
+
+  v('d_rx').value = cfg.doubleRightX;
+  v('d_rx_val').textContent = cfg.doubleRightX;
+  v('d_lx').value = cfg.doubleLeftX;
+  v('d_lx_val').textContent = cfg.doubleLeftX;
+
+  saveSettings();
+  render();
+}
+
+// 切換進紙方向 (封口朝下 top / 封底朝下 bottom)
+function setDirection(dir) {
+  currentDirection = dir;
+  v('dir_top').classList.toggle('active', dir === 'top');
+  v('dir_bottom').classList.toggle('active', dir === 'bottom');
+
+  const bottomOpts = v('bottomFeedOptions');
+  if (bottomOpts) {
+    bottomOpts.style.display = (dir === 'bottom') ? 'block' : 'none';
+  }
+
+  // 切換進紙方向時，預覽預設重設為正面完成效果 (正向檢視)
+  previewMode = 'front';
+
+  updatePreviewUI();
+  updateBadge();
+  updateHintCard();
+  saveSettings();
+  render();
+}
+
+// 切換預覽視角模式 ('front' 正面完成效果 vs 'tray' 托盤進紙視角)
+function toggleViewMode() {
+  previewMode = (previewMode === 'front') ? 'tray' : 'front';
+  updatePreviewUI();
+  updateBadge();
+  render();
+}
+
+function updatePreviewUI() {
+  const mockup = v('envelopeMockup');
+  const flapLabel = v('flapLabel');
+  const flipBtn = v('viewFlipBtn');
+  const feedArrow = v('feedArrow');
+  const footerNote = v('previewFooterNote');
+
+  if (currentDirection === 'bottom') {
+    flipBtn.style.display = '';
+    if (previewMode === 'front') {
+      // 正面完成效果 (預設，文字永遠正向)
+      mockup.classList.remove('is-bottom-feed');
+      flapLabel.textContent = '── 封口折線端 ──';
+      flipBtn.classList.remove('active');
+      flipBtn.innerHTML = '👁️ 正面檢視 (預設)';
+      flipBtn.title = '點擊切換為「托盤進紙視角」';
+      feedArrow.textContent = '✨ 正面完成效果（字體已轉正，直覺好排版）';
+      feedArrow.style.background = 'rgba(200, 169, 110, 0.08)';
+      feedArrow.style.color = '#c8a96e';
+      if (footerNote) {
+        footerNote.textContent = '✨ 目前為正面完成效果（字體保持正向，直覺好閱讀與微調排版）。列印時系統會自動旋轉 180° 輸出，印出拿在手上完全正向！';
+      }
+    } else {
+      // 托盤進紙視角 (模擬進紙托盤方向)
+      mockup.classList.add('is-bottom-feed');
+      flapLabel.textContent = '── 封口折線端 (在後) ──';
+      flipBtn.classList.add('active');
+      flipBtn.innerHTML = '🖨️ 托盤進紙視角';
+      flipBtn.title = '點擊切換回「正面檢視」';
+      feedArrow.textContent = '▼ 印表機進紙入口（封底先進入）';
+      feedArrow.style.background = 'rgba(0, 0, 0, 0.04)';
+      feedArrow.style.color = '#666';
+      if (footerNote) {
+        footerNote.textContent = '🖨️ 目前為托盤進紙視角（模擬實體紅包袋封底先進紙時的托盤放置狀態，文字倒轉列印以確保印出後正向）。';
+      }
+    }
+  } else {
+    // 封口朝下 (傳統模式)
+    mockup.classList.remove('is-bottom-feed');
+    flapLabel.textContent = '── 封口折線端 (先入) ──';
+    flipBtn.style.display = 'none';
+    feedArrow.textContent = '▼ 印表機進紙入口（此端先進入）';
+    feedArrow.style.background = 'rgba(0, 0, 0, 0.04)';
+    feedArrow.style.color = '#666';
+    if (footerNote) {
+      footerNote.textContent = '白色區域代表印表機 A5 進紙托盤，紅色方塊代表您的實體紅包袋。文字將精準印在紅包袋中央。';
+    }
+  }
+}
+
+function onRotateChange() {
+  rotateOnPrint = v('chk_rotate').checked;
+  updateHintCard();
+  saveSettings();
+  render();
+}
+
+// 更新頂部狀態 Badge
+function updateBadge() {
+  const cfg = FEED_CONFIGS[currentFeedMode];
+  let dirText = ' ‧ 封口朝下';
+  if (currentDirection === 'bottom') {
+    dirText = (previewMode === 'front') ? ' ‧ 封底朝下(正面檢視)' : ' ‧ 封底朝下(托盤視角)';
+  }
+  v('feed_badge').textContent = cfg.name.replace('模式', '') + dirText;
+}
+
+// 更新列印提示卡片
+function updateHintCard() {
+  const el = v('hint_feed_rule');
+  if (!el) return;
+  if (currentDirection === 'bottom') {
+    el.innerHTML = '放紙方向：<strong>紅包袋封底（封閉端）朝下先放入</strong>印表機托盤。' + 
+      (rotateOnPrint ? '（系統已自動旋轉 180° 列印，印出拿在手上完全是正向，且能徹底避免封口卡紙壓爛！）' : '（目前設定為不旋轉列印）');
+  } else {
+    el.innerHTML = '放紙方向：<strong>紅包袋封口（開口折線端）朝下先放入</strong>進紙托盤。';
+  }
+}
+
+function onCustomXChange() {
+  saveSettings();
+  render();
+}
+
+// 快速填入祝賀語
+function applyPhrase(topOrRight, botOrLeft, isDouble = false) {
+  if (isDouble) {
+    switchMode('double');
+    v('d_right').value = topOrRight;
+    v('d_left').value = botOrLeft;
+  } else {
+    switchMode('single');
+    v('s_top').value = topOrRight;
+    v('s_bot').value = botOrLeft;
+  }
+  saveSettings();
+  render();
+}
+
+// 監聽並同步所有 Slider 數值顯示
+const rangeIds = ['s_size', 's_x', 's_y', 's_gap', 'd_rsize', 'd_rx', 'd_rtop', 'd_lsize', 'd_lx', 'd_ltop'];
+rangeIds.forEach(id => {
+  const el = v(id);
+  const valEl = v(id + '_val');
+  if (el && valEl) {
+    el.addEventListener('input', () => {
+      valEl.textContent = el.value;
+      saveSettings();
+      render();
+    });
+  }
+});
+
+let fontCustomized = false;
+function onFontChange() {
+  fontCustomized = true;
+  saveSettings();
+  render();
+}
+
+// 本地存檔功能
+function saveSettings() {
+  try {
+    const data = {
+      mode: currentMode,
+      feedMode: currentFeedMode,
+      direction: currentDirection,
+      rotateOnPrint: rotateOnPrint,
+      font: v('font_family').value,
+      fontCustomized: fontCustomized,
+      s_top: v('s_top').value,
+      s_bot: v('s_bot').value,
+      s_size: v('s_size').value,
+      s_x: v('s_x').value,
+      s_y: v('s_y').value,
+      s_gap: v('s_gap').value,
+      d_right: v('d_right').value,
+      d_rsize: v('d_rsize').value,
+      d_rx: v('d_rx').value,
+      d_rtop: v('d_rtop').value,
+      d_left: v('d_left').value,
+      d_lsize: v('d_lsize').value,
+      d_lx: v('d_lx').value,
+      d_ltop: v('d_ltop').value
+    };
+    localStorage.setItem('envelope_print_settings', JSON.stringify(data));
+  } catch (e) {}
+}
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem('envelope_print_settings');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+
+    if (data.fontCustomized && data.font) {
+      v('font_family').value = data.font;
+      fontCustomized = true;
+    } else {
+      v('font_family').value = 'DFKai-SB';
+    }
+    if (data.s_top !== undefined) v('s_top').value = data.s_top;
+    if (data.s_bot !== undefined) v('s_bot').value = data.s_bot;
+    if (data.s_size !== undefined) v('s_size').value = data.s_size;
+    if (data.s_x !== undefined) v('s_x').value = data.s_x;
+    if (data.s_y !== undefined) v('s_y').value = data.s_y;
+    if (data.s_gap !== undefined) v('s_gap').value = data.s_gap;
+
+    if (data.d_right !== undefined) v('d_right').value = data.d_right;
+    if (data.d_rsize !== undefined) v('d_rsize').value = data.d_rsize;
+    if (data.d_rx !== undefined) v('d_rx').value = data.d_rx;
+    if (data.d_rtop !== undefined) v('d_rtop').value = data.d_rtop;
+    else if (data.d_top !== undefined) v('d_rtop').value = data.d_top;
+
+    if (data.d_left !== undefined) v('d_left').value = data.d_left;
+    if (data.d_lsize !== undefined) v('d_lsize').value = data.d_lsize;
+    if (data.d_lx !== undefined) v('d_lx').value = data.d_lx;
+    if (data.d_ltop !== undefined) v('d_ltop').value = data.d_ltop;
+    else if (data.d_top !== undefined) v('d_ltop').value = data.d_top;
+
+    // 更新顯示文字
+    rangeIds.forEach(id => {
+      if (v(id) && v(id + '_val')) v(id + '_val').textContent = v(id).value;
+    });
+
+    if (data.rotateOnPrint !== undefined) {
+      rotateOnPrint = data.rotateOnPrint;
+      if (v('chk_rotate')) v('chk_rotate').checked = rotateOnPrint;
+    }
+    if (data.feedMode) setFeedMode(data.feedMode);
+    if (data.direction) setDirection(data.direction);
+    if (data.mode) switchMode(data.mode);
+  } catch (e) {}
+}
+
+// ── 核心繪製邏輯 ──
+// isPrint: true 表示列印 (純墨水文字，背景透明)；false 表示預覽
+function drawToCanvas(canvas, W, H, isPrint) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  // 300 DPI: A5 寬 148mm = 1748px, 高 210mm = 2480px
+  const DPI = 300;
+  const MM = DPI / 25.4; // 1mm 對應之 px
+  const S = W / 1748;    // 畫布縮放比率
+
+  const selectedFont = v('font_family').value;
+  let fontFamily = '';
+  if (selectedFont === 'DFKai-SB') {
+    fontFamily = '"DFKai-SB", "BiauKai", "標楷體", "Kaiti TC", "STKaiti", serif';
+  } else if (selectedFont === 'Noto Sans TC') {
+    fontFamily = '"Noto Sans TC", "Microsoft JhengHei", "微軟正黑體", sans-serif';
+  } else {
+    fontFamily = '"Microsoft JhengHei", "微軟正黑體", sans-serif';
+  }
+
+  // 是否需要旋轉 180° 列印/顯示：
+  // 1. 列印 (isPrint = true)：當「封底朝下」且勾選「列印自動旋轉 180°」時旋轉
+  // 2. 螢幕預覽 (isPrint = false)：預設「正面檢視」完全不旋轉（文字永遠保持正向好排版）；
+  //    僅在使用者手動切換至「托盤進紙視角」(previewMode === 'tray') 時才倒轉以示意托盤擺放
+  const shouldRotate = (currentDirection === 'bottom' && rotateOnPrint) && 
+                       (isPrint || previewMode === 'tray');
+
+  if (shouldRotate) {
+    const centerXMm = FEED_CONFIGS[currentFeedMode].centerX;
+    const centerYMm = 90; // 紅包袋長度 180mm 之垂直中心 90mm
+    const cx = centerXMm * MM * S;
+    const cy = centerYMm * MM * S;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(Math.PI);
+    ctx.translate(-cx, -cy);
+  }
+
+  ctx.fillStyle = '#111111'; // 列印深黑色墨水
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+
+  if (currentMode === 'single') {
+    const sizePx = Math.round(num('s_size') * S);
+    const xMm = num('s_x');
+    const yMm = num('s_y');
+    const gapMm = num('s_gap');
+
+    const xPx = Math.round(xMm * MM * S);
+    const yPx = Math.round(yMm * MM * S);
+    const gapPx = Math.round(gapMm * MM * S);
+
+    const chars1 = v('s_top').value.trim().split('');
+    const chars2 = v('s_bot').value.trim().split('');
+
+    // 字元行進步長 (含適度字距)
+    const step = Math.round((num('s_size') + 12) * S);
+
+    ctx.font = `700 ${sizePx}px ${fontFamily}`;
+
+    let curY = yPx;
+
+    // 上半段文字
+    chars1.forEach(ch => {
+      ctx.fillText(ch, xPx, curY);
+      curY += step;
+    });
+
+    // 兩段之間空隙
+    curY += gapPx;
+
+    // 下半段文字
+    chars2.forEach(ch => {
+      ctx.fillText(ch, xPx, curY);
+      curY += step;
+    });
+
+  } else {
+    // 雙欄模式
+    const rsizePx = Math.round(num('d_rsize') * S);
+    const lsizePx = Math.round(num('d_lsize') * S);
+    const rxPx = Math.round(num('d_rx') * MM * S);
+    const lxPx = Math.round(num('d_lx') * MM * S);
+    const rtopPx = Math.round(num('d_rtop') * MM * S);
+    const ltopPx = Math.round(num('d_ltop') * MM * S);
+
+    const rChars = v('d_right').value.trim().split('');
+    const lChars = v('d_left').value.trim().split('');
+
+    const rStep = Math.round((num('d_rsize') + 10) * S);
+    const lStep = Math.round((num('d_lsize') + 8) * S);
+
+    // 左欄（副文）
+    ctx.font = `700 ${lsizePx}px ${fontFamily}`;
+    lChars.forEach((ch, i) => {
+      ctx.fillText(ch, lxPx, ltopPx + i * lStep);
+    });
+
+    // 右欄（主文）
+    ctx.font = `700 ${rsizePx}px ${fontFamily}`;
+    rChars.forEach((ch, i) => {
+      ctx.fillText(ch, rxPx, rtopPx + i * rStep);
+    });
+  }
+
+  // 結束旋轉環境還原
+  if (shouldRotate) {
+    ctx.restore();
+  }
+}
+
+function render() {
+  const preview = v('preview');
+  drawToCanvas(preview, 1480, 2100, false);
+}
+
+// ── 列印觸發 ──
+function doPrint() {
+  const pc = v('printCanvas');
+  // 高解析度 300 DPI 渲染
+  drawToCanvas(pc, 1748, 2480, true);
+  window.print();
+}
+
+// 初始化
+loadSettings();
+if (!localStorage.getItem('envelope_print_settings_v3')) {
+  setFeedMode('center'); // 預設為居中進紙最佳參數
+  localStorage.setItem('envelope_print_settings_v3', '1');
+}
+render();
+</script>
+</body>
+</html>
