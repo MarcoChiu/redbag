@@ -7,7 +7,7 @@ export default function HintCard({ direction, rotateOnPrint }) {
     <div className="hint-card">
       <strong>🖨️ 印表機列印重要指引：</strong>
       <ol>
-        <li>印表機紙張尺寸請務必選擇 <strong>A5 (148 × 210 mm)</strong>。</li>
+        <li>印表機紙張尺寸請務必選擇 <strong>A4 (210 × 297 mm)</strong>。</li>
         <li>邊界務必設為 <strong>「無」或「0」</strong>。</li>
         <li>縮放 / 比例請選 <strong>「實際大小 (100%)」</strong>，勿勾選縮小配合頁面。</li>
         <li>

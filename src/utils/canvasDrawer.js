@@ -15,10 +15,10 @@ export function drawToCanvas(canvas, W, H, isPrint, state) {
 
   ctx.clearRect(0, 0, W, H);
 
-  // 300 DPI: A5 寬 148mm = 1748px, 高 210mm = 2480px
+  // 300 DPI: A4 寬 210mm = 2480px, 高 297mm = 3508px
   const DPI = 300;
   const MM = DPI / 25.4; // 1mm 對應之 px (約 11.811px)
-  const S = W / 1748;    // 畫布基準縮放比率
+  const S = W / 2480;    // 畫布基準縮放比率 (A4 寬 2480px)
 
   // 解析字型
   const fontObj = FONT_OPTIONS.find(f => f.value === state.font) || FONT_OPTIONS[0];
@@ -31,7 +31,7 @@ export function drawToCanvas(canvas, W, H, isPrint, state) {
                        (isPrint || state.previewMode === 'tray');
 
   if (shouldRotate) {
-    const centerXMm = FEED_CONFIGS[state.feedMode]?.centerX || 74;
+    const centerXMm = FEED_CONFIGS[state.feedMode]?.centerX || 105;
     const centerYMm = 90; // 紅包袋垂直中心 90mm
     const cx = centerXMm * MM * S;
     const cy = centerYMm * MM * S;
@@ -82,7 +82,7 @@ export function drawToCanvas(canvas, W, H, isPrint, state) {
       curY += step;
     });
 
-  } else {
+  } else if (state.mode === 'double') {
     // 雙欄並排模式
     const rsizePx = Math.round(Number(state.d_rsize) * S);
     const lsizePx = Math.round(Number(state.d_lsize) * S);
@@ -104,6 +104,45 @@ export function drawToCanvas(canvas, W, H, isPrint, state) {
     });
 
     // 右欄（主文）
+    ctx.font = `700 ${rsizePx}px ${fontFamily}`;
+    rChars.forEach((ch, i) => {
+      ctx.fillText(ch, rxPx, rtopPx + i * rStep);
+    });
+  } else if (state.mode === 'triple') {
+    // 三欄並排模式（右欄上款、中欄主文、左欄下款）
+    const rsizePx = Math.round(Number(state.t_rsize) * S);
+    const csizePx = Math.round(Number(state.t_csize) * S);
+    const lsizePx = Math.round(Number(state.t_lsize) * S);
+
+    const rxPx = Math.round(Number(state.t_rx) * MM * S);
+    const cxPx = Math.round(Number(state.t_cx) * MM * S);
+    const lxPx = Math.round(Number(state.t_lx) * MM * S);
+
+    const rtopPx = Math.round(Number(state.t_rtop) * MM * S);
+    const ctopPx = Math.round(Number(state.t_ctop) * MM * S);
+    const ltopPx = Math.round(Number(state.t_ltop) * MM * S);
+
+    const rChars = (state.t_right || '').trim().split('');
+    const cChars = (state.t_center || '').trim().split('');
+    const lChars = (state.t_left || '').trim().split('');
+
+    const rStep = Math.round((Number(state.t_rsize) + 8) * S);
+    const cStep = Math.round((Number(state.t_csize) + 10) * S);
+    const lStep = Math.round((Number(state.t_lsize) + 8) * S);
+
+    // 左欄（下款 / 敬贈 / 落款）
+    ctx.font = `700 ${lsizePx}px ${fontFamily}`;
+    lChars.forEach((ch, i) => {
+      ctx.fillText(ch, lxPx, ltopPx + i * lStep);
+    });
+
+    // 中欄（正文 / 主文 / 獎金）
+    ctx.font = `700 ${csizePx}px ${fontFamily}`;
+    cChars.forEach((ch, i) => {
+      ctx.fillText(ch, cxPx, ctopPx + i * cStep);
+    });
+
+    // 右欄（上款 / 賽事 / 題名）
     ctx.font = `700 ${rsizePx}px ${fontFamily}`;
     rChars.forEach((ch, i) => {
       ctx.fillText(ch, rxPx, rtopPx + i * rStep);

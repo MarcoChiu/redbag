@@ -39,7 +39,7 @@ export default function MobileBottomBar({ state, onOpenPreview, onPrint }) {
           <div className="mobile-bar-title">
             <span>👁️ 點擊展開即時預覽</span>
           </div>
-          <span className="mobile-bar-hint">隨調隨看 · 支援單雙欄</span>
+          <span className="mobile-bar-hint">隨調隨看 · 支援單欄/雙欄/三欄</span>
         </div>
       </div>
 

@@ -31,7 +31,7 @@ export default function EnvelopePreview({
     <div className={`preview-column ${isDrawer ? 'in-drawer' : ''}`}>
       {/* 頂部標題與狀態 */}
       <div className="preview-header">
-        <span className="preview-label">A5 托盤與紅包袋模擬</span>
+        <span className="preview-label">A4 托盤與紅包袋模擬</span>
         <span className="feed-status-badge">
           {cfg.shortName} · {isBottom ? '封底先入' : '封口先入'}
         </span>
@@ -61,11 +61,11 @@ export default function EnvelopePreview({
         </div>
       )}
 
-      {/* A5 紙張模擬框 (250px × 354.7px) */}
-      <div className="a5-container">
+      {/* A4 紙張模擬框 (250px × 353.6px) */}
+      <div className="a4-container">
         {/* 進紙入口引導文字 */}
         <div
-          className="a5-feed-arrow"
+          className="a4-feed-arrow"
           style={
             isBottom && !isTrayView
               ? { background: 'rgba(200, 169, 110, 0.1)', color: '#c8a96e' }
@@ -79,8 +79,8 @@ export default function EnvelopePreview({
             : '▼ 印表機進紙入口（開口端先進入）'}
         </div>
 
-        {/* A5 正中央虛線 */}
-        <div className="a5-center-line" title="A5 紙張正中央"></div>
+        {/* A4 正中央虛線 */}
+        <div className="a4-center-line" title="A4 紙張正中央"></div>
 
         {/* 擬真紅包袋 */}
         <div
@@ -111,7 +111,7 @@ export default function EnvelopePreview({
         type="button"
         className="btn-print"
         onClick={onPrint}
-        title="開啟瀏覽器高解析度 A5 列印對話框"
+        title="開啟瀏覽器高解析度 A4 列印對話框"
       >
         <span>🖨️</span> 立即列印紅包袋
       </button>
@@ -122,7 +122,7 @@ export default function EnvelopePreview({
           ? isTrayView
             ? '🖨️ 目前為「托盤進紙視角」：模擬實體封底先進紙時托盤狀態，文字倒轉列印以保證印出後正向。'
             : '✨ 目前為「正面完成效果」：字體維持正向好閱讀。列印時系統會自動旋轉 180° 輸出，印出拿在手上完全正向且防卡紙！'
-          : '白色區域代表印表機 A5 托盤，紅色區塊為實體紅包袋。文字將精準印在紅包袋中央。'}
+          : '白色區域代表印表機 A4 托盤，紅色區塊為實體紅包袋。文字將精準印在紅包袋中央。'}
       </p>
     </div>
   );

@@ -24,12 +24,12 @@ These rules must be strictly followed by all AI agents operating within this wor
 
 ## 🧧 Redbag Domain Context & Printing Core Constraints
 - **實體物理尺寸不可隨意更動**：
-  - A5 紙張：寬 148mm × 高 210mm
+  - A4 紙張（最通用標準）：寬 210mm × 高 297mm
   - 標準紅包袋：寬 90mm × 高 180mm
   - 列印解析度：嚴格鎖定 300 DPI (1mm ≈ 11.811px)
-- **進紙校正座標系統保護**：
+- **進紙校正座標系統保護 (以 A4 寬 210mm 為基準)**：
   - 靠左進紙：中心 45mm
-  - 居中進紙：中心 74mm
-  - 靠右進紙：中心 103mm
+  - 居中進紙：中心 105mm
+  - 靠右進紙：中心 165mm
 - **防卡紙翻轉機制**：封底先進紙時，必須維持 180° 自動旋轉輸出選項，確保印出為正向且避免封口折線捲入印表機卡紙。
 - **預覽視角 Sticky 釘選**：右側紅包袋預覽面板必須維持 Sticky 釘選在畫面中，解決控制項過長滾動時看不見即時效果的痛點。

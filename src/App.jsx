@@ -17,13 +17,27 @@ import { drawToCanvas } from './utils/canvasDrawer';
 export default function App() {
   const [settings, setSettings] = useState(() => {
     try {
-      // 優先讀取新版 key，若無則兼容舊版 HTML 儲存的設定
+      // 優先讀取新版 key，若無則兼容舊版儲存的設定
       const saved =
         localStorage.getItem(STORAGE_KEY) ||
+        localStorage.getItem('redbag_print_settings_v4') ||
         localStorage.getItem('envelope_print_settings');
       if (saved) {
         const parsed = JSON.parse(saved);
-        return { ...DEFAULT_SETTINGS, ...parsed };
+        // 若為舊版 A5 居中設定 (s_x === 74)，自動平滑遷移至 A4 居中 (105)
+        if (parsed.s_x === 74 && parsed.feedMode === 'center') {
+          parsed.s_x = 105;
+          parsed.d_rx = 105;
+          parsed.d_lx = 82;
+        }
+        const merged = { ...DEFAULT_SETTINGS, ...parsed };
+        if (!parsed.t_rx && parsed.feedMode && FEED_CONFIGS[parsed.feedMode]) {
+          const cfg = FEED_CONFIGS[parsed.feedMode];
+          merged.t_rx = cfg.tripleRightX;
+          merged.t_cx = cfg.tripleCenterX;
+          merged.t_lx = cfg.tripleLeftX;
+        }
+        return merged;
       }
     } catch (e) {
       console.warn('Failed to load saved envelope settings:', e);
@@ -62,7 +76,10 @@ export default function App() {
       feedMode: mode,
       s_x: cfg.centerX,
       d_rx: cfg.doubleRightX,
-      d_lx: cfg.doubleLeftX
+      d_lx: cfg.doubleLeftX,
+      t_rx: cfg.tripleRightX,
+      t_cx: cfg.tripleCenterX,
+      t_lx: cfg.tripleLeftX
     }));
   }, []);
 
@@ -157,7 +174,7 @@ export default function App() {
         <div className="footer-links">
           <span>Port: 3007</span>
           <span>·</span>
-          <span>A5 (148×210mm)</span>
+          <span>A4 (210×297mm)</span>
           <span>·</span>
           <span>300 DPI Ultra HD</span>
         </div>

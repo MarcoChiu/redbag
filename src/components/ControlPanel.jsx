@@ -25,14 +25,21 @@ export default function ControlPanel({
           className={`tab ${state.mode === 'single' ? 'active' : ''}`}
           onClick={() => onChange({ mode: 'single' })}
         >
-          <span>✏️</span> 單欄居中模式
+          <span>✏️</span> 單欄居中
         </button>
         <button
           type="button"
           className={`tab ${state.mode === 'double' ? 'active' : ''}`}
           onClick={() => onChange({ mode: 'double' })}
         >
-          <span>📜</span> 雙欄並排模式
+          <span>📜</span> 雙欄並排
+        </button>
+        <button
+          type="button"
+          className={`tab ${state.mode === 'triple' ? 'active' : ''}`}
+          onClick={() => onChange({ mode: 'triple' })}
+        >
+          <span>📑</span> 三欄並排
         </button>
       </div>
 
@@ -176,7 +183,7 @@ export default function ControlPanel({
                 <input
                   type="range"
                   min="15"
-                  max="135"
+                  max="195"
                   value={state.s_x}
                   onChange={(e) => handleNumberChange('s_x', e.target.value)}
                 />
@@ -218,13 +225,14 @@ export default function ControlPanel({
               </div>
             </div>
           </>
-        ) : (
+        ) : state.mode === 'double' ? (
           <>
             <div className="section-title">
               <span>4. 雙欄文字與毫米級排版</span>
             </div>
 
             {/* 右欄主文 */}
+            <div className="column-section-badge">右欄（主文）</div>
             <div className="field">
               <label>右欄主文（直排）</label>
               <input
@@ -252,8 +260,8 @@ export default function ControlPanel({
               <div className="range-row">
                 <input
                   type="range"
-                  min="20"
-                  max="130"
+                  min="15"
+                  max="195"
                   value={state.d_rx}
                   onChange={(e) => handleNumberChange('d_rx', e.target.value)}
                 />
@@ -275,7 +283,8 @@ export default function ControlPanel({
             </div>
 
             {/* 左欄副文 */}
-            <div className="field" style={{ marginTop: '10px' }}>
+            <div className="column-section-badge" style={{ marginTop: '10px' }}>左欄（副文）</div>
+            <div className="field">
               <label>左欄副文（直排）</label>
               <input
                 type="text"
@@ -303,7 +312,7 @@ export default function ControlPanel({
                 <input
                   type="range"
                   min="10"
-                  max="120"
+                  max="185"
                   value={state.d_lx}
                   onChange={(e) => handleNumberChange('d_lx', e.target.value)}
                 />
@@ -321,6 +330,165 @@ export default function ControlPanel({
                   onChange={(e) => handleNumberChange('d_ltop', e.target.value)}
                 />
                 <span className="range-val">{state.d_ltop}</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="section-title">
+              <span>4. 三欄文字與毫米級排版</span>
+            </div>
+
+            {/* 1. 右欄（上款/題名/賽事） */}
+            <div className="column-section-badge">右欄（上款 / 題名）</div>
+            <div className="field">
+              <label>右欄文字（直排）</label>
+              <input
+                type="text"
+                value={state.t_right}
+                onChange={(e) => handleInputChange('t_right', e.target.value)}
+                placeholder="如：一一五年全國桌球錦標賽"
+              />
+            </div>
+            <div className="field">
+              <label>右欄字級大小</label>
+              <div className="range-row">
+                <input
+                  type="range"
+                  min="40"
+                  max="140"
+                  value={state.t_rsize}
+                  onChange={(e) => handleNumberChange('t_rsize', e.target.value)}
+                />
+                <span className="range-val">{state.t_rsize}</span>
+              </div>
+            </div>
+            <div className="field">
+              <label>右欄水平位置（mm）</label>
+              <div className="range-row">
+                <input
+                  type="range"
+                  min="15"
+                  max="195"
+                  value={state.t_rx}
+                  onChange={(e) => handleNumberChange('t_rx', e.target.value)}
+                />
+                <span className="range-val">{state.t_rx}</span>
+              </div>
+            </div>
+            <div className="field">
+              <label>右欄上方邊距（mm）</label>
+              <div className="range-row">
+                <input
+                  type="range"
+                  min="10"
+                  max="90"
+                  value={state.t_rtop}
+                  onChange={(e) => handleNumberChange('t_rtop', e.target.value)}
+                />
+                <span className="range-val">{state.t_rtop}</span>
+              </div>
+            </div>
+
+            {/* 2. 中欄（正文/獎金主文） */}
+            <div className="column-section-badge" style={{ marginTop: '10px' }}>中欄（正文 / 主文）</div>
+            <div className="field">
+              <label>中欄文字（直排）</label>
+              <input
+                type="text"
+                value={state.t_center}
+                onChange={(e) => handleInputChange('t_center', e.target.value)}
+                placeholder="如：教練團辛勞獎金"
+              />
+            </div>
+            <div className="field">
+              <label>中欄字級大小</label>
+              <div className="range-row">
+                <input
+                  type="range"
+                  min="50"
+                  max="180"
+                  value={state.t_csize}
+                  onChange={(e) => handleNumberChange('t_csize', e.target.value)}
+                />
+                <span className="range-val">{state.t_csize}</span>
+              </div>
+            </div>
+            <div className="field">
+              <label>中欄水平位置（mm）</label>
+              <div className="range-row">
+                <input
+                  type="range"
+                  min="15"
+                  max="195"
+                  value={state.t_cx}
+                  onChange={(e) => handleNumberChange('t_cx', e.target.value)}
+                />
+                <span className="range-val">{state.t_cx}</span>
+              </div>
+            </div>
+            <div className="field">
+              <label>中欄上方邊距（mm）</label>
+              <div className="range-row">
+                <input
+                  type="range"
+                  min="10"
+                  max="90"
+                  value={state.t_ctop}
+                  onChange={(e) => handleNumberChange('t_ctop', e.target.value)}
+                />
+                <span className="range-val">{state.t_ctop}</span>
+              </div>
+            </div>
+
+            {/* 3. 左欄（下款/致贈人/落款） */}
+            <div className="column-section-badge" style={{ marginTop: '10px' }}>左欄（下款 / 敬贈）</div>
+            <div className="field">
+              <label>左欄文字（直排）</label>
+              <input
+                type="text"
+                value={state.t_left}
+                onChange={(e) => handleInputChange('t_left', e.target.value)}
+                placeholder="如：後援會全體家長 敬賀"
+              />
+            </div>
+            <div className="field">
+              <label>左欄字級大小</label>
+              <div className="range-row">
+                <input
+                  type="range"
+                  min="40"
+                  max="140"
+                  value={state.t_lsize}
+                  onChange={(e) => handleNumberChange('t_lsize', e.target.value)}
+                />
+                <span className="range-val">{state.t_lsize}</span>
+              </div>
+            </div>
+            <div className="field">
+              <label>左欄水平位置（mm）</label>
+              <div className="range-row">
+                <input
+                  type="range"
+                  min="10"
+                  max="185"
+                  value={state.t_lx}
+                  onChange={(e) => handleNumberChange('t_lx', e.target.value)}
+                />
+                <span className="range-val">{state.t_lx}</span>
+              </div>
+            </div>
+            <div className="field">
+              <label>左欄上方邊距（mm）</label>
+              <div className="range-row">
+                <input
+                  type="range"
+                  min="10"
+                  max="90"
+                  value={state.t_ltop}
+                  onChange={(e) => handleNumberChange('t_ltop', e.target.value)}
+                />
+                <span className="range-val">{state.t_ltop}</span>
               </div>
             </div>
           </>
