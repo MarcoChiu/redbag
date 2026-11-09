@@ -5,7 +5,7 @@
 [![Privacy First](https://img.shields.io/badge/Privacy-100%25_Local-brightgreen?style=flat-spec)](https://github.com/MarcoChiu/redbag)
 [![Tech Stack](https://img.shields.io/badge/Stack-React%2019%20%7C%20Vite%206-blue?style=flat-spec)](https://github.com/MarcoChiu/redbag)
 [![Port](https://img.shields.io/badge/Port-3007-orange?style=flat-spec)](https://github.com/MarcoChiu/redbag)
-[![Version](https://img.shields.io/badge/Version-v1.1.0-gold?style=flat-spec)](https://github.com/MarcoChiu/redbag)
+[![Version](https://img.shields.io/badge/Version-v1.2.0-gold?style=flat-spec)](https://github.com/MarcoChiu/redbag)
 [![License](https://img.shields.io/badge/License-ISC-green?style=flat-spec)](https://github.com/MarcoChiu/redbag)
 
 一個專為一般家用/辦公室印表機設計的**紅包袋直排列印工具**。本專案採用 **React + Vite** 現代化架構重構，100% 在瀏覽器端本地端運行，提供毫米級精確定位、印表機進紙偏移校正、防卡紙翻轉與即時預覽體驗。
