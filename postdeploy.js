@@ -2,14 +2,18 @@
 // postdeploy.js — automatically commit & push source changes to main after deploying
 import { execSync } from 'child_process';
 
-const now = new Date();
-const pad = (n) => String(n).padStart(2, '0');
-const timestamp =
-  now.getFullYear() +
-  pad(now.getMonth() + 1) +
-  pad(now.getDate()) +
-  pad(now.getHours()) +
-  pad(now.getMinutes());
+const formatter = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Taipei',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false
+});
+const parts = formatter.formatToParts(new Date());
+const get = (type) => parts.find((p) => p.type === type)?.value || '';
+const timestamp = `${get('year')}${get('month')}${get('day')}${get('hour')}${get('minute')}`;
 
 try {
   execSync('git add -A', { stdio: 'inherit' });
