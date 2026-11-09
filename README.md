@@ -4,7 +4,6 @@
 
 [![Privacy First](https://img.shields.io/badge/Privacy-100%25_Local-brightgreen?style=flat-spec)](https://github.com/MarcoChiu/redbag)
 [![Tech Stack](https://img.shields.io/badge/Stack-React%2019%20%7C%20Vite%206-blue?style=flat-spec)](https://github.com/MarcoChiu/redbag)
-[![Port](https://img.shields.io/badge/Port-3007-orange?style=flat-spec)](https://github.com/MarcoChiu/redbag)
 [![Version](https://img.shields.io/badge/Version-v1.2.0-gold?style=flat-spec)](https://github.com/MarcoChiu/redbag)
 [![License](https://img.shields.io/badge/License-ISC-green?style=flat-spec)](https://github.com/MarcoChiu/redbag)
 
@@ -31,37 +30,19 @@
 
 ### 3. 📝 單欄、雙欄與三欄靈活排版
 - **單欄模式**：支援上半段與下半段直排文字，可自訂字級、上下段間距與水平/垂直位置。
-- **雙欄模式**：支援右欄（主文）與左欄（副文），獨立調整兩欄字級與位置，適用於「賽事獎勵」、「感謝恩師」等題字。
+- **雙欄模式（正中主文 + 右側事由）**：支援右欄（賽事 / 事由）與中欄（正中主文 / 獎金），字級與位置獨立微調，適用於「賽事獎勵」、「感謝恩師」等題字。
 - **三欄模式（經典書法題詞）**：支援右欄（上款/題名）、中欄（正文/獎金主文）、左欄（下款/致贈人敬賀），完整呈現傳統典雅紅包袋格局，各自具備獨立字級與毫米級座標微調。
 - **經典書法字體支援**：內建標楷體、微軟正黑體、思源黑體，字韻典雅。
-- **常用範本快速填入**：提供多組常見祝賀詞，一鍵套用。
 
 ### 4. 📌 右側 Sticky 固定釘選預覽（解決控制項長度痛點）
 - 針對設定項目繁多、表單滾動過長的痛點，右側 A4 托盤與紅包袋模擬器採用 **Sticky 釘選機制**。
 - 不管左側滾動微調到哪一個滑桿，右側紅包袋文字與排版效果始終保持在視窗正中央！
 - 預覽區下方直接集成**大尺寸「立即列印」按鈕**，無需滾動到底部即可隨時列印。
 
-### 5. 🎯 300 DPI 超高解析度輸出
+### 5. 🎯 300 DPI 超高解析度輸出與隔離列印
 - 專門針對通用標準 A4 托盤 (210 × 297 mm) 與標準紅包袋 (90 × 180 mm) 定制。
 - 繪製層使用 2480 × 3508 px 超高解析度 Canvas，字體邊緣銳利清晰，無毛邊鋸齒。
-
----
-
-## 🚀 Unified Workspace & Port 規範
-
-本專案遵循 `c:\Marco\DeveloperAI\` 統一專案連續 Port 分配矩陣：
-
-| Port | 專案名稱 | 說明 |
-| :--- | :--- | :--- |
-| `3000` | `localhosttoolbox` | 本地萬能 PDF 與圖片工具箱 |
-| `3001` | `memorizewords` | 單字記憶工具 |
-| `3002` | `youtubegetlink` | YouTube 連結解析工具 |
-| `3003` | `livepoll` | 即時投票系統 |
-| `3004` | `kline` | K線預測量化分析 |
-| `3005` | `fs533610tt` | 桌球賽事管理 |
-| `3006` | `HIIT` | 間歇運動計時器 |
-| **`3007`** | **`redbag`** | **紅包袋列印工具 (本專案)** |
-| `3008+` | *(未來專案)* | *依序往下遞增分配* |
+- 採用獨立隱藏 iframe 列印技術，確保列印不受外部 CSS 污染，無邊距、無多餘頁面。
 
 ---
 
@@ -72,10 +53,9 @@
 # 安裝相依套件
 npm install
 
-# 啟動 Vite 開發伺服器 (指定 Port 3007)
+# 啟動 Vite 開發伺服器
 npm run dev
 ```
-啟動後於瀏覽器開啟：`http://localhost:3007`
 
 ### 2. 專案打包
 ```bash
@@ -95,26 +75,31 @@ npm run deploy
 ```text
 redbag/
 ├── .agents/
-│   └── AGENTS.md             # AI Agent 規範與 Port 分配約定
+│   └── AGENTS.md             # AI Agent 開發指引
 ├── public/
 │   └── favicon.svg           # 紅包袋向量圖示
 ├── src/
 │   ├── components/
-│   │   ├── Header.jsx        # 標題與版本號/建置時間 Badge
-│   │   ├── ControlPanel.jsx  # 控制設定面板 (進紙校正、字型、滑桿)
-│   │   ├── EnvelopePreview.jsx # Sticky 釘選預覽與快捷列印按鈕
-│   │   ├── HintCard.jsx      # 動態列印設定指引
-│   │   └── PrintCanvas.jsx   # 300 DPI 列印專用畫布
+│   │   ├── RedbagPrint.jsx   # 核心紅包袋列印主元件 (含高畫質隔離列印)
+│   │   ├── redbag/           # 模組化設定面板與預覽抽屜元件群
+│   │   │   ├── RedbagControlPanel.jsx
+│   │   │   ├── RedbagPreview.jsx
+│   │   │   ├── RedbagMobileBottomBar.jsx
+│   │   │   ├── RedbagMobilePreviewDrawer.jsx
+│   │   │   ├── RedbagMobileSegmentedTabs.jsx
+│   │   │   └── RedbagHintCard.jsx
 │   ├── constants/
-│   │   └── envelope.js       # 尺寸規格、進紙定義、祝賀詞範本
+│   │   └── redbagConstants.js # 尺寸規格、進紙定義、雙欄/三欄預設
+│   ├── style/
+│   │   └── redbag.css        # 紅包袋專用樣式與響應式抽屜版面
 │   ├── utils/
-│   │   └── canvasDrawer.js   # 高解析度直排書法 Canvas 繪製核心
-│   ├── App.jsx               # 狀態管理、LocalStorage 存取與整體版面
-│   ├── index.css             # 黑金主題、Glassmorphism、Sticky 樣式
+│   │   └── redbagCanvasDrawer.js # 高解析度直排書法 Canvas 繪製核心
+│   ├── App.jsx               # 根元件
+│   ├── index.css             # 全域重設與背景樣式
 │   └── main.jsx              # React 19 掛載點
 ├── index.html                # HTML 模板與 Google Fonts 引用
 ├── package.json              # 專案相依與 scripts
-├── vite.config.js            # Vite 配置 (Port 3007, base: './', __BUILD_TIME__)
+├── vite.config.js            # Vite 配置 (base: './', __BUILD_TIME__)
 ├── postdeploy.js             # GitHub Pages 自動發佈與原始碼同步腳本
 └── 紅包袋列印工具.html       # 原版備份參考檔案
 ```
